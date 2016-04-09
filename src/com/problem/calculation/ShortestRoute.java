@@ -26,11 +26,14 @@ public class ShortestRoute implements RouteStrategy{
         long sum=0;
         for(String st1:st){
             sum=0;
+            if(!st1.isEmpty()){
             for(Route route: itinerary.buildItineraries(st1).getRoutes()){
                 sum+=route.getDistance();
                 
             }
+           
             ls.add(Integer.valueOf(Long.toString(sum)));
+             }
         }
         
         Collections.sort(ls);
