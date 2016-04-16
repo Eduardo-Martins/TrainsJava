@@ -15,6 +15,8 @@ import com.problem.calculation.NumberRoundTrip;
 import com.problem.calculation.NumberRoundTripPerDistance;
 import com.problem.calculation.RouteCalculation;
 import com.problem.calculation.ShortestRoute;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +56,8 @@ public class TrainsTest {
         d.setName("d");
         Town e = new Town();
         e.setName("e");
+        Town f = new Town();
+        f.setName("f");
         
         Route ab5=new Route();
         ab5.setTownOrigin(a);
@@ -110,6 +114,18 @@ public class TrainsTest {
         ae7.setDistance(7L);
         ae7.setRef("ae7");
         
+        Route fa7 = new Route();
+        fa7.setTownOrigin(f);
+        fa7.setTownDestination(a);
+        fa7.setDistance(3L);
+        fa7.setRef("fa7");
+        
+        Route ef14 = new Route();
+        ef14.setTownOrigin(e);
+        ef14.setTownDestination(f);
+        ef14.setDistance(14L);
+        ef14.setRef("ef14");
+        
         it.getRoutes().add(ab5);
         it.getRoutes().add(bc4);
         it.getRoutes().add(cd8);
@@ -119,6 +135,9 @@ public class TrainsTest {
         it.getRoutes().add(ce2);
         it.getRoutes().add(eb3);
         it.getRoutes().add(ae7);
+        it.getRoutes().add(ef14);
+        it.getRoutes().add(fa7);
+        
     }
     
     @After
@@ -128,7 +147,13 @@ public class TrainsTest {
 
      @Test
      public void testMockObjectSize() {
-         assertTrue(it.getRoutes().size()==9);
+         assertTrue(it.getRoutes().size()==11);
+         Set<String> s = new HashSet();
+         for(Route o : it.getRoutes()){
+             s.add(o.getTownOrigin().getName());
+         }
+         assertTrue(s.size()==6);
+         
      }
      
      @Test(expected = NoSuchRouteException.class)
@@ -146,6 +171,10 @@ public class TrainsTest {
          Itinerary it4=it.buildItineraries("a-d-c");
          long route3=strategy.executeStrategy(it4); 
          assertTrue(route3==13);
+         
+         Itinerary it7=it.buildItineraries("e-f");
+         long route7=strategy.executeStrategy(it7); 
+         assertTrue(route7==14);
          
          Itinerary it5=it.buildItineraries("a-e-b-c-d");
          long route4=strategy.executeStrategy(it5); 
@@ -167,7 +196,13 @@ public class TrainsTest {
          it.formatItineraries("b", "b",true,5);
           Itinerary it2=it;
          long route2=strategy.executeStrategy(it2);
-         assertTrue(route2==9);     
+         assertTrue(route2==9);
+         
+         it.formatItineraries("a", "f",true,5);
+        Itinerary it3=it;
+        RouteCalculation strategy3 = new RouteCalculation(new ShortestRoute());  
+         long route3=strategy3.executeStrategy(it3);
+         assertTrue(route3==21);
     }
     
     @Test
@@ -184,6 +219,12 @@ public class TrainsTest {
          Itinerary it2=it;
          long route2=strategy1.executeStrategy(it2);
          assertTrue(route2==3);
+         
+         it.formatItineraries("a", "f",false,5);
+         RouteCalculation strategy2 = new RouteCalculation(new NumberRoundTrip(4,"e"));
+         Itinerary it3=it;
+         long route3=strategy2.executeStrategy(it3);
+         assertTrue(route3==2);
     }
     
     @Test
@@ -193,7 +234,7 @@ public class TrainsTest {
         Itinerary it1 = it;
         RouteCalculation strategy = new RouteCalculation(new NumberRoundTripPerDistance("c","c", 30));
         long route = strategy.executeStrategy(it1);
-        assertTrue(route == 7);
+        assertTrue(route == 8);
         
     }
 }
